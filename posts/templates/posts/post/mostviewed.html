@@ -1,0 +1,19 @@
+{% extends "posts/post/ranking.html" %}
+
+{% block content_content %}
+
+<!-- 
+    <h1>Posts ranking</h1>
+ -->
+    <ol>
+    {% for post in most_viewed %}
+        <li>
+            <a href="{{ post.get_absolute_url }}">
+                {{ post.title }}
+            </a>
+        </li>
+    {% empty %}
+    {% endfor %}
+    </ol>
+    
+{% endblock %}

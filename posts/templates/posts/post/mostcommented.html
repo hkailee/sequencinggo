@@ -1,0 +1,13 @@
+{% extends "posts/post/ranking.html" %}
+{% load post_tags %}
+
+
+{% block content_content %}
+    
+    <ul>
+    {% for post in most_commented_posts %}
+    <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+    {% endfor %}
+    </ul>
+    
+{% endblock %}

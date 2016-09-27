@@ -1,0 +1,27 @@
+{% extends "event/base.html" %}
+{% load static %}
+{% load post_tags %}
+
+
+{% block title %}
+    {{ conference.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="product-detail">
+        <img src="{% if conference.image %}{{ conference.image.url }}{% else %}{% static "img/no_image.png" %}{% endif %}">
+        <h1>{{ conference.name }}</h1>
+        <h2><a href="{{ conference.category.get_absolute_url }}">{{ conference.category }}</a></h2>
+        <p class="price">${{ conference.price }}</p>
+        <form action="{% url "cart:cart_add" conference.id %}" method="post">
+            {{ cart_conference_form }}
+            {% csrf_token %}
+            <input type="submit" value="Add to cart">
+        </form>
+        {{ conference.description|markdown }}
+    </div>
+{% endblock %}
+
+        
+        
+        

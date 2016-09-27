@@ -1,0 +1,52 @@
+{% load post_tags %}
+{% load thumbnail %}
+{% load staticfiles %}
+
+<main>
+
+{% for post in mypost %}
+
+	<div class="postdetail">
+    	{% with total_likes=post.users_like.count total_views=post.total_views %}
+        <div class="image-info">        
+                <div>
+                    <span class="count">
+                        <span class="total">{{ total_likes }}</span>
+                        vote{{ total_likes|pluralize }}
+                    </span>
+                </div>
+                <div>
+                    <span class="count">
+                        <span class="total">{{ total_views }}</span>
+                        view{{ total_views|pluralize }}
+                    </span>
+				</div>
+        </div>		
+		{% endwith %}
+    
+    	<div class="info">
+        	<a href="{{ post.get_absolute_url }}" class="title">{{ post.title }}</a>
+    	</div>
+        
+		<div class="summary">
+			<p>{{ post.description|markdown|truncatewords_html:30 }}</p>
+		</div>   
+        
+    <div class="middle">
+        <p>
+        {% for tag in post.tags.all %}
+            <a href="{% url "posts:post_list_by_tag" tag.slug %}">{{ tag.name }}</a>
+            {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+        </p>
+    <p class="date">Published {{ post.created }} by {{ post.user }}</p>
+    
+	<a href="{% url "posts:post_remove" post.id %}" class="btn red">Remove</a>
+	<a href="{% url "posts:post_edit" post.id %}" class="btn blue">Edit</a>
+	
+	</div>
+	</div>
+    {% empty %}
+    {% endfor %}
+</main>
+

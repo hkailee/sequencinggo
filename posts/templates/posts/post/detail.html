@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load post_tags %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ post.title }}</h1>
+    {% load thumbnail %}
+    {% thumbnail post.image "300" as im %}
+        <a href="{{ post.image.url }}">
+            <img src="{{ im.url }}" class="image-detail">
+        </a>
+    {% endthumbnail %}
+    {% with total_votes=post.users_like.count users_vote=post.users_like.all %}
+        <div class="image-info">
+                <div>
+                    <span class="count">
+                        <span class="total">{{ total_votes }}</span>
+                        vote{{ total_votes|pluralize }}
+                    </span>
+                    <span class="count">
+                        <span class="totalc">{{ total_views }}</span>
+                        view{{ total_views|pluralize }}
+                    </span>
+                    <a href="#" data-id="{{ post.id }}" data-action="{% if request.user in users_vote %}un{% endif %}vote" class="vote button">
+                        {% if request.user not in users_vote %}
+                            Vote
+                        {% else %}
+                            Unvote
+                        {% endif %}
+                    </a>
+                </div>
+        </div>
+
+    {% endwith %}
+
+
+    <p class="date">Published {{ post.created }} by {{ post.user }}</p>
+    {{ post.description|markdown }}
+    <p><a href="{% url "posts:post_share" post.id %}">Share this post</a></p>
+    
+    <h2>Similar posts</h2>
+    {% for post in similar_posts %}
+        <p><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></p>
+    {% empty %}
+        There are no similar posts yet.
+    {% endfor %}
+    
+    {% with comments.count as total_comments %}
+        <h2>{{ total_comments }} comment{{ total_comments|pluralize }}</h2>
+    {% endwith %}
+    
+    {% for comment in comments %}
+        <div class="comment">
+            <p class="info">Comment {{ forloop.counter }} by {{ comment.user }} on {{ comment.created }}</p>
+            <p>{{ comment.body|markdown }}</p>
+        </div>
+    {% empty %}
+        <p>There are no comments yet.</p>
+    {% endfor %}
+    
+
+        <h2>Add a new comment</h2>
+        <form action="." method="post" enctype="multipart/form-data">
+            {{ comment_form.as_p }}
+            {% csrf_token %}
+            <p><input type="submit" value="Add comment"></p>
+        </form>
+
+    
+{% endblock %}
+
+{% block domready %}
+    $('a.vote').click(function(e){
+        e.preventDefault();
+        $.post('{% url "posts:vote" %}',
+            {
+                id: $(this).data('id'),
+                action: $(this).data('action')
+            },
+            function(data){
+                if (data['status'] == 'ok')
+                {
+                    var previous_action = $('a.vote').data('action');
+
+                    // toggle data-action
+                    $('a.vote').data('action', previous_action == 'vote' ? 'unvote' : 'vote');
+                    // toggle link text
+                    $('a.vote').text(previous_action == 'vote' ? 'Unvote' : 'Vote');
+
+                    // update total votes
+                    var previous_votes = parseInt($('span.count .total').text());
+                    $('span.count .total').text(previous_action == 'vote' ? previous_votes + 1 : previous_votes - 1);
+                }
+        });
+
+    });
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load post_tags %}
+
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+    <div id="dashboard">
+
+    <h1>Dashboard</h1>
+        
+    <p>Welcome to your dashboard. You can <a href="{% url "edit" %}">edit your profile</a> or <a href="{% url "password_change" %}">change your password</a>.<p>
+    
+    <p>In year 2017, we are especially proud to announce the launch of Singapore Molecular 
+    Diagnostics Symposium 2017, NGS in Healthcare. It is an event organised by Molecular 
+    Diagnosis Centre, National University Hospital, Singapore. This symposium exclusively 
+    devoted to applications of NGS techniques in clinical setting. The programme is 
+    well-developed with established workgroup/speakers on Clinical Science, Virology and 
+    Oncology from global industry, top educational institutions, healthcare facilities and 
+    government agencies. Not to be missed. <a href="{% url "event:conference_list" %}">Please register here.</a></p>
+
+    </div>
+
+     <div id="sidebar">
+        <h2>My posts</h2>
+
+        {% with total_posts_created=request.user.posts_created.count %}
+        <p>I've contributed <a href="{% url "posts:mypost" %}">{{ total_posts_created }} post{{ total_posts_created|pluralize }}</a> and
+    {% endwith %}
+        {% with total_comments_created=request.user.comments_created.count %}
+        {{ total_comments_created }} comment{{ total_comments_created|pluralize }} so far.</p>
+    {% endwith %}	    
+
+        <h3>Latest posts</h3>
+        {% show_latest_posts 3 %}
+
+        <h3>Most commented posts</h3>
+        {% get_most_commented_posts as most_commented_posts %}
+        <ul>
+        {% for post in most_commented_posts %}
+            <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+        {% endfor %}
+        </ul>
+
+    </div>
+
+	    
+
+    <div id="action-list">
+    
+    	<h2>What's happening</h2>
+        {% for action in actions %}
+            {% include "actions/action/detail.html" %}
+        {% endfor %}
+    </div>
+    
+    
+{% endblock %}

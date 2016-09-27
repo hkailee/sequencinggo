@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Contribute a post{% endblock %}
+
+{% block content %}
+<div id="dashboard">
+    <h1>Contribute a post</h1>
+    <form action="." method="post" enctype="multipart/form-data">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Add Post!" class="btn blue">
+    </form>
+</div>    
+    
+<div id="sidebar">
+    <h2>How to format</h2>
+    <ol>
+        <li>put returns between paragraphs</li>
+        <li>for linebreak add 2 spaces at end</li>
+        <li>_italic_ or **bold**</li>
+        <li>indent code by 4 spaces</li>
+        <li>backtick escapes `like _so_`</li>
+        <li>to make links<br>[foo](http://foo.com) or<br>&lt;a href="http://foo.com">foo&lt;/a></li>
+        <li><a href="http://meta.stackexchange.com/questions/1777/what-html-tags-are-allowed-on-stack-exchange-sites">basic HTML</a> also allowed</li>
+    </ol>
+</div>
+
+{% endblock %}
+
+
