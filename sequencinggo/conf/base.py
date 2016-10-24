@@ -19,7 +19,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['sequencinggo.com']
+ALLOWED_HOSTS = ['www.sequencinggo.com', 'sequencinggo.com']
 
 ### See recipe "Relative paths in the settings"
 
@@ -86,7 +86,7 @@ USE_TZ = True
 
 ### See recipe "Dynamic static URL for Git users"
 from utils.misc import get_git_changeset
-STATIC_URL = "/static/%s/" % get_git_changeset(BASE_DIR)
+STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 MEDIA_URL = "/media/"
