@@ -19,6 +19,11 @@ def conference_detail(request, id, slug):
     conference = get_object_or_404(Conference, id=id, slug=slug, available=True)
     cart_conference_form = CartAddConferenceForm()
     return render(request,
-                  'event/conference/detail.html',
+                  'event/conference/smds_detail.html',
                   {'conference': conference,
                    'cart_conference_form': cart_conference_form})
+
+
+def smds_detail(request, id, slug):
+    conference = get_object_or_404(Conference, id=id, slug=slug, available=True)
+    return render(request, 'event/conference/smds_detail.html',)

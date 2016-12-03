@@ -118,9 +118,9 @@ def post_share(request, post_id):
             # Form fields passed validation
             cd = form.cleaned_data
             post_url = request.build_absolute_uri(post.get_absolute_url())
-            subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['email'], post.title)
+            subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['From'], post.title)
             message = 'Read "{}" at {}\n\n{}\'s comments: {}'.format(post.title, post_url, cd['name'], cd['comments'])
-            send_mail(subject, message, 'admin@sequencingthefuture.com', [cd['to']])
+            send_mail(subject, message, 'smds.help@gmail.com', [cd['to']])
             sent = True
     else:
         form = EmailPostForm()
@@ -178,7 +178,7 @@ def post_list(request, tag_slug=None):
         tag = get_object_or_404(Tag, slug=tag_slug)
         posts = posts.filter(tags__in=[tag])
 
-    paginator = Paginator(posts, 3) # 3 posts in each page
+    paginator = Paginator(posts, 10) # 10 posts in each page
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
@@ -217,7 +217,7 @@ def post_list_by_tag(request, tag_slug=None):
         for post in posts:
             post.total_views = r.get('post:{}:views'.format(post.id))
 
-    paginator = Paginator(posts, 3) # 3 posts in each page
+    paginator = Paginator(posts, 10) # 10 posts in each page
     page = request.GET.get('page')
     try:
         posts = paginator.page(page)
@@ -241,7 +241,7 @@ def post_list_by_tag(request, tag_slug=None):
 class PostListView(ListView):
     queryset = Post.objects.all()
     context_object_name = 'posts'
-    paginate_by = 3
+    paginate_by = 10
     template_name = 'posts/post/list.html'
 
 
@@ -298,23 +298,26 @@ def mypost(request):
                    
 @login_required
 def post_remove(request, post_id):
-    Post.objects.filter(id=post_id).delete()
-    return redirect('posts:mypost')
+    item = Post.objects.get(pk=post_id)
+    if request.user == item.user:
+        Post.objects.filter(id=post_id).delete()
+        return redirect('posts:mypost')
 
 @login_required
 def post_edit(request, post_id):
     item = Post.objects.get(pk=post_id)
-    if request.method == 'POST':
-        form = PostCreateForm(request.POST, instance=item)
-        if form.is_valid():
-            form.save()
-            return redirect('posts:mypost')
+    if request.user == item.user:
+        if request.method == 'POST':
+            form = PostCreateForm(request.POST, instance=item)
+            if form.is_valid():
+                form.save()
+                return redirect('posts:mypost')
 
-    else:
-        form = PostCreateForm(instance=item)
+        else:
+            form = PostCreateForm(instance=item)
 
-    args = {}
-    args.update(csrf(request))
-    args['form'] = form
+        args = {}
+        args.update(csrf(request))
+        args['form'] = form
 
-    return render_to_response('posts/post/post_edit.html', args)
+        return render_to_response('posts/post/post_edit.html', args)
